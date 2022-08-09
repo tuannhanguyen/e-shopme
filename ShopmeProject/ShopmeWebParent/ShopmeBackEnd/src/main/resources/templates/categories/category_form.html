@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments :: page_head(${titlePage}, 'none')"></head>
+<body>
+<div class="container-fluid">
+<div>
+	<div th:replace="navigation :: menu"></div>
+
+	<div>
+		<h2 th:text="'Manage Categories | ' + ${titlePage}"></h2>
+	</div>
+		
+	<form th:action="@{/categories/save}" method="post" style="max-width: 500px; margin:0 auto;"
+		onsubmit="return checkUnique(this)"
+		enctype="multipart/form-data"
+		th:object="${category}">
+		<input type="hidden" th:field="*{id}">
+		<div class="border border-secondary rounded p-3">
+			<div class="form-group row">
+				<label class="col-sm-4 col-form-label">Category Name</label>
+				<div class="col-sm-8">
+					<input type="text" class="form-control" th:field="*{name}" required>
+				</div>
+			</div>
+			<div class="form-group row">
+				<label class="col-sm-4 col-form-label">Alias</label>
+				<div class="col-sm-8">
+					<input type="text" class="form-control" th:field="*{alias}" required>
+				</div>
+			</div>
+			<div class="form-group row">
+				<label class="col-sm-4 col-form-label">Parent Category</label>
+				<div class="col-sm-8">
+					<select class="form-control" th:field="*{parent}">
+						<option value="0">[No parent]</option>
+						<th:block th:each="cat: ${categories}">
+							<option th:value="${cat.id}" >[[${cat.name}]]</option>
+						</th:block>
+					</select>
+				</div>
+			</div>
+			
+			 <div class="form-group row">
+				<label class="col-sm-4 col-form-label">Image</label>
+				<div class="col-sm-8">
+					<input type="hidden" th:field="*{image}">
+					<input type="file"  id="fileImage" name="fileImage" accept="image/png, image/jpeg"
+						class="mb-2">
+					<div class="mt-2">
+						<img id="thumbnail" alt="Image preview" 
+						class="img-fluid" th:src="@{${category.imagePath}}">
+					</div>
+				</div>
+			</div>
+			
+			<div class="form-group row">
+				<label class="col-sm-4 col-form-label">Enabled</label>
+				<div class="col-sm-8">
+					<input type="checkbox" th:field="*{enabled}" >
+				</div>
+			</div>
+			
+			<div class="text-center">
+				<input type="submit" value="Save" class="btn btn-primary m-3">
+				<input type="button" value="Cancel" class="btn btn-secondary" id="btnCancel"> 
+			</div>
+		</div>
+	</form>
+	
+	<div th:replace="modal_fragments :: modal_dialog"></div>
+	
+	<div th:replace="fragments :: footer"></div>
+	
+</div>
+</div>
+<script type="text/javascript">
+	MAX_FILE_SIZE = 102400; //100KB
+	moduleURL = "[[@{/categories}]]";
+	
+	function checkUnique(form){
+		catId = $("#id").val();
+		catName = $("#name").val();
+		catAlias = $("#alias").val();
+		
+		csrfValue = $("input[name='_csrf']").val();
+		
+		url = "[[@{/categories/check_unique}]]";
+		
+		params = {id: catId, name: catName, alias: catAlias, _csrf: csrfValue}; // id, name phai match voi @param("id"), @param("name") trong Controller
+		
+		$.post(url, params, function(response){
+			if(response == "OK"){
+				form.submit();
+			} else if(response == "DuplicateName"){
+				showWarningModal("There is another category having same name  " + catName);
+			} else if(response == "DuplicateAlias"){
+				showWarningModal("There is another category having same alias  " + catAlias);
+			} else{
+				showErrorModal("Could not connect to the server");
+			}
+		}).fail(function(){
+			showErrorModal("Could not connect to the server");
+		});
+		
+		return false;
+	}
+	
+	
+</script>
+<script th:src="@{/js/common_form.js}"></script>
+</body>
+</html>

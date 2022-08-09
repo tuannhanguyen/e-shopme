@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecuriry5">
+<head th:replace="fragments :: page_head('Products - Shopme Admin', 'none')"></head>
+<body>
+<div class="container-fluid">
+
+	<div th:replace="navigation :: menu">
+	
+	</div>
+
+	<div>
+	<th:block sec:authorize="hasAnyAuthority('Admin', 'Editor')">
+		<h2>Manage products</h2>
+		<a class="fas fa-plus-square fa-2x icon-dark" th:href="@{/products/new}"></a>
+	</th:block>
+		
+	</div>
+	
+	<div>
+		<form th:action="@{'/products' + '/page/1'}" class="form-inline m-3" id="searchForm">
+			<input type="hidden" name="sortField" th:value="${sortField}">
+			<input type="hidden" name="sortDir" th:value="${sortDir}">
+			
+			Category: 
+			<select class="form-control" name="categoryId" id="dropdownCategory" >
+				<option value="0">All Category</option>
+				<th:block th:each="cat: ${listCategories}">
+					<option th:value="${cat.id}" th:selected="${categoryId} == ${cat.id}" >[[${cat.name}]]</option>
+				</th:block>
+			</select>
+			&nbsp;&nbsp;
+			Filter: &nbsp;
+			<input type="search" name="keyword" th:value="${keyword}" class="form-control">
+			&nbsp;&nbsp;
+			<button type="submit" class="btn btn-primary">
+				<i class="fas fa-search "></i>
+			</button>
+			&nbsp;&nbsp;
+			<button type="button" id="btnClear" class="btn btn-secondary">
+				<i class="fas fa-eraser"></i>
+			</button>
+		</form>
+	</div>
+	<div th:if="${message != null}" class="alert alert-success text-center">[[${message}]]</div>
+	
+	<div class="full-details">
+		<table class="table table-border table-striped table-hover table-responsive-xl">
+			<thead class="thead-dark">
+				<tr>
+					<th>
+						<div th:replace="fragments :: column_link( 'id', 'ID', 'tag')"></div>
+					</th>
+					<th>Main Image</th>
+					<th>
+						<div th:replace="fragments :: column_link( 'name', 'Product Name', 'tag')"></div>
+					</th>
+					<th>
+						<div th:replace="fragments :: column_link( 'brand', 'Brand', 'tag')"></div>
+					</th>
+					<th>
+						<div th:replace="fragments :: column_link( 'category', 'Category', 'tag')"></div>
+					</th>
+					<th:block sec:authorize="hasAnyAuthority('Admin', 'Editor')">
+						<th >Enabled</th>
+					</th:block>
+					
+					<th></th>
+				</tr>
+				</thead>
+			<tbody>
+				<tr th:each="product : ${products}">
+					<td>[[${product.id}]]</td>
+					<td>
+						<img th:src="@{${product.getMainImagePath}}" style="width: 120px" class="img-fluid" />
+					</td>
+					<td>
+						<a class="link-detail" th:href="@{'/products/details/' + ${product.id}}" 
+						th:title="${product.name}">[[${product.shortName}]]</a>
+					</td>
+					<td>[[${product.brand.name}]]</td>
+					<td>[[${product.category.name}]]</td>
+					<th:block sec:authorize="hasAnyAuthority('Admin', 'Editor')">
+						<td >
+							<div th:replace="fragments :: enabled_status(${product.enabled}, 'product', '/products/' + ${product.id})"></div>
+						</td>
+					</th:block>
+					<td>
+						<a class="fas fa-file-alt fa-2x icon-green link-detail" th:href="@{'/products/details/' + ${product.id}}" title="View details of this product "></a>
+						&nbsp;
+						<th:block sec:authorize="hasAnyAuthority('Admin', 'Editor', 'Salesperson')">
+							<div th:replace="fragments :: edit_action('/products/edit/' + ${product.id}, 'product')"></div>
+						</th:block>
+						&nbsp;
+						<th:block>
+							<div sec:authorize="hasAnyAuthority('Admin', 'Editor')"  th:replace="fragments :: delete_action('/products/delete/' + ${product.id}, 'product', ${product.id})"></div>
+						</th:block>
+					</td>
+				</tr>
+			</tbody>
+				
+		</table>
+	</div>
+	
+	<div th:replace= "fragments :: pagination('product')"></div>
+	
+	<div th:replace="modal_fragments :: confirm_modal"></div>
+	
+	<div class="modal fade" id="detailModal">
+		<div class="modal-dialog modal-xl">
+			<div class="modal-content"></div>
+		</div>
+	</div>
+	
+	<div th:replace="fragments :: footer"></div>
+	
+</div>
+<script type="text/javascript">
+	moduleURL = "[[@{/products}]]";
+	
+	$(document).ready(function(){
+		$(".link-delete").on("click", function(e){
+			e.preventDefault();
+			showDeleteConfirmModal($(this), "product");
+		});
+		
+		$(".link-detail").on("click", function(e){
+			e.preventDefault();
+			linkDetailURL = $(this).attr("href");
+			$("#detailModal").modal("show").find(".modal-content").load(linkDetailURL);
+		});
+		
+		$("#btnClear").on('click', function(){
+			clearFilter();
+		});
+		
+		$("#dropdownCategory").on("change", function(){
+			$("#searchForm").submit();
+		});
+	})
+</script>
+<script th:src="@{/js/common_list.js}"></script>
+</body>
+</html>

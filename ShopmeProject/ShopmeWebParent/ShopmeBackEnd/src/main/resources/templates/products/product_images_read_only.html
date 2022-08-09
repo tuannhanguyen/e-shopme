@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="page_head(title)">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+
+<title>[[${title}]]</title>
+
+<link rel="stylesheet" type="text/css" th:href="@{/fontawesome/all.css}">
+<link rel="stylesheet" type="text/css" th:href="@{/styles.css}">
+<link rel="stylesheet" type="text/css"
+	th:href="@{/webjars/bootstrap/css/bootstrap.min.css}">
+
+<script type="text/javascript"
+	src="/ShopmeAdmin/webjars/jquery/3.4.1/jquery.min.js"></script>
+<script type="text/javascript"
+	src="/ShopmeAdmin/webjars/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+<script type="text/javascript" th:src="@{/js/common.js}"></script>
+
+</head>
+<body>
+	<div th:fragment="content" th:remove="tag">
+		<div class="row" id="divProductImage">
+			<div class="col border m-3 p-2">
+				<div>
+					<label>Main Image:</label>
+					<div class="m-2">
+						<img alt="Main image preview" class="img-fluid mb-2"
+							th:src="@{${product.getMainImagePath}}">
+					</div>
+				</div>
+			</div>
+
+			<th:block th:each="productImage, status : ${product.getImages}">
+				<div class="col border m-3 p2">
+					<div>
+						<div>
+							<label>Extra Image #[[${status.index + 1}]]: </label>
+						</div>
+						<div class="m-2">
+							<img th:alt="'Extra image #' + ${status.index+1} + ' preview'"
+								class="img-fluid mb-2" th:src="@{${productImage.imagePath}}">
+						</div>
+					</div>
+				</div>
+			</th:block>
+		</div>
+	</div>
+
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments :: page_head('Categories - Shopme Admin', 'none')"></head>
+<body>
+<div class="container-fluid">
+
+	<div th:replace="navigation :: menu">
+	
+	</div>
+
+
+	<div>
+		<h2>Manage categories</h2>
+		<a class="fas fa-plus-square fa-2x icon-dark" th:href="@{/categories/new}"></a>
+	</div>
+	
+	<div th:replace="fragments :: search_form"></div>
+	
+	<div class="full-details">
+		<table class="table table-border table-striped table-hover table-responsive-xl">
+			<thead class="thead-dark">
+				<tr>
+					<th class="hideable-column">
+						ID
+					</th>
+					<th class="hideable-column">
+						Category Image
+					</th>
+					<th>
+						<th th:replace="fragments :: column_link('name', 'Category Name', 'tag')"/>
+					</th>
+					<th>
+						Alias
+					</th>
+					<th>
+						Enabled
+					</th>
+				</tr>
+				</thead>
+			<tbody>
+				<tr th:each="categorie : ${categories}">
+					<td class="hideable-column">[[${categorie.id}]]</td>
+					<td>
+						<img th:src="@{${categorie.imagePath}}" style="width: 100px" class="img-fluid" />
+					</td>
+					<td class="hideable-column">[[${categorie.name}]]</td>
+					<td>[[${categorie.alias}]]</td>
+					
+					<td>
+						<div th:replace="fragments :: enabled_status(${categorie.enabled}, 'category', '/categories/' + ${categorie.id})"></div>
+					</td>
+					
+					<td>
+						<div th:replace="fragments :: edit_action('/categories/edit/' + ${categorie.id}, 'category')"></div>
+						&nbsp;
+						<th:block th:if="${categorie.hasChildren == false}">
+							<div  th:replace="fragments :: delete_action('/categories/delete/' + ${categorie.id}, 'category', ${categorie.id})"></div>
+						</th:block>
+					</td>
+				</tr>
+			</tbody>
+				
+		</table>
+	</div>
+	
+	<div th:if="${keyword != null}" class="text-center">
+		<span>Search does not show categories in hierarchical form</span>
+		<div th:replace= "fragments :: pagination('categories')"></div>
+	</div>
+	
+	<th:block th:unless="${keyword != null}">
+		<div th:replace= "fragments :: pagination('top-level categories')"></div>
+	</th:block>
+	
+	<div th:replace="modal_fragments :: confirm_modal"></div>
+	
+	<div th:replace="fragments :: footer"></div>
+	
+</div>
+<script type="text/javascript">
+	moduleURL = "[[@{/categories}]]";
+	
+	$(document).ready(function(){
+		$(".link-delete").on("click", function(e){
+			e.preventDefault();
+			showDeleteConfirmModal($(this), "category");
+		});
+		
+		$("#btnClear").on("click", ()=>{
+			 clearFilter();
+		})
+	})
+</script>
+<script th:src="@{/js/common_list.js}"></script>
+</body>
+</html>
