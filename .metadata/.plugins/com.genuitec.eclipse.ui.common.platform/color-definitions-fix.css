@@ -9,6 +9,22 @@ IEclipsePreferences#org-eclipse-debug-ui {
 	preferences:
 		'org.eclipse.debug.ui.consoleBackground=245,245,245'
 }
+IEclipsePreferences#org-eclipse-tm-terminal-control {
+	preferences:
+		'BLUE=0,0,196'
+		'BRIGHT_BLUE=0,0,150'
+		'BRIGHT_CYAN=0,138,138'
+		'BRIGHT_GREEN=0,132,0'
+		'BRIGHT_MAGENTA=123,0,123'
+		'BRIGHT_RED=149,0,0'
+		'BRIGHT_YELLOW=100,100,0'
+		'CYAN=0,185,185'
+		'GREEN=0,166,0'
+		'MAGENTA=191,0,191'
+		'RED=187,0,0'
+		'TerminalPrefInvertColors=false'
+		'YELLOW=130,130,0'
+}
 IEclipsePreferences#org-eclipse-ui-editors {
 	preferences:
 		'AbstractTextEditor.Color.Background=250,250,250'
